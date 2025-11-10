@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import apiClient from '../../lib/api-client'
-import type { ApiResponse, AdminBusinessListItem, BusinessListResponse, UpdateBusinessStatusRequest } from '../../types/index'
-import { Search, Building2, Mail, Phone, MapPin, Eye, Users, FileText, CheckCircle, XCircle } from 'lucide-react'
+import type { ApiResponse, AdminBusinessListItem, BusinessListResponse, UpdateBusinessStatusRequest, AdminUpdateBusinessRequest } from '../../types/index'
+import { Search, Building2, Mail, Phone, MapPin, Eye, Users, FileText, CheckCircle, XCircle, Edit } from 'lucide-react'
 import { cx, formatDate, truncate } from '../../lib/utils'
+import EditBusinessModal from '../../components/admin/EditBusinessModal'
 
 type StatusTabType = 'all' | 'active' | 'inactive'
 
@@ -16,6 +17,8 @@ export default function BusinessesPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const [updatingBusinessId, setUpdatingBusinessId] = useState<string | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [selectedBusiness, setSelectedBusiness] = useState<AdminBusinessListItem | null>(null)
   const limit = 20
 
   useEffect(() => {
@@ -87,6 +90,24 @@ export default function BusinessesPage() {
       toast.error(message)
     } finally {
       setUpdatingBusinessId(null)
+    }
+  }
+
+  const handleEditClick = (business: AdminBusinessListItem) => {
+    setSelectedBusiness(business)
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditSave = async (businessId: string, data: AdminUpdateBusinessRequest) => {
+    try {
+      await apiClient.put<ApiResponse>(`/admin/businesses/${businessId}`, data)
+      toast.success('Business updated successfully')
+      setIsEditModalOpen(false)
+      fetchBusinesses()
+    } catch (error: any) {
+      const message = error.response?.data?.error || error.response?.data?.message || 'Failed to update business'
+      toast.error(message)
+      throw error
     }
   }
 
@@ -310,23 +331,32 @@ export default function BusinessesPage() {
                       {formatDate(business.created_at)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <button
-                        onClick={() => handleStatusUpdate(business.id, !business.status)}
-                        disabled={updatingBusinessId === business.id}
-                        className={cx(
-                          'px-3 py-1.5 rounded-md text-xs font-semibold transition-all shadow-xs',
-                          business.status
-                            ? 'bg-error-50 text-error-700 hover:bg-error-100 border border-error-200'
-                            : 'bg-success-50 text-success-700 hover:bg-success-100 border border-success-200',
-                          'disabled:opacity-50 disabled:cursor-not-allowed'
-                        )}
-                      >
-                        {updatingBusinessId === business.id
-                          ? 'Updating...'
-                          : business.status
-                          ? 'Deactivate'
-                          : 'Activate'}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleEditClick(business)}
+                          className="px-3 py-1.5 rounded-md text-xs font-semibold transition-all shadow-xs bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200 flex items-center gap-1"
+                        >
+                          <Edit className="h-3 w-3" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleStatusUpdate(business.id, !business.status)}
+                          disabled={updatingBusinessId === business.id}
+                          className={cx(
+                            'px-3 py-1.5 rounded-md text-xs font-semibold transition-all shadow-xs',
+                            business.status
+                              ? 'bg-error-50 text-error-700 hover:bg-error-100 border border-error-200'
+                              : 'bg-success-50 text-success-700 hover:bg-success-100 border border-success-200',
+                            'disabled:opacity-50 disabled:cursor-not-allowed'
+                          )}
+                        >
+                          {updatingBusinessId === business.id
+                            ? 'Updating...'
+                            : business.status
+                            ? 'Deactivate'
+                            : 'Activate'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -367,6 +397,16 @@ export default function BusinessesPage() {
             </div>
           )}
         </div>
+      )}
+
+      {/* Edit Business Modal */}
+      {selectedBusiness && (
+        <EditBusinessModal
+          business={selectedBusiness}
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onSave={handleEditSave}
+        />
       )}
     </div>
   )

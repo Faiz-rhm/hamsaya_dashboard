@@ -9,6 +9,7 @@ import {
   Building2,
   Tag,
   LogOut,
+  Settings,
 } from 'lucide-react'
 
 const navigation = [
@@ -18,6 +19,7 @@ const navigation = [
   { name: 'Reports', href: '/reports', icon: AlertTriangle },
   { name: 'Businesses', href: '/businesses', icon: Building2 },
   { name: 'Categories', href: '/categories', icon: Tag },
+  { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
 export default function DashboardLayout() {

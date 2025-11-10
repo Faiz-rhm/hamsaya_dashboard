@@ -10,6 +10,7 @@ import PostsPage from './pages/dashboard/PostsPage'
 import ReportsPage from './pages/dashboard/ReportsPage'
 import BusinessesPage from './pages/dashboard/BusinessesPage'
 import CategoriesPage from './pages/dashboard/CategoriesPage'
+import SettingsPage from './pages/dashboard/SettingsPage'
 
 function AppContent() {
   return (
@@ -30,6 +31,7 @@ function AppContent() {
           <Route path="reports" element={<ReportsPage />} />
           <Route path="businesses" element={<BusinessesPage />} />
           <Route path="categories" element={<CategoriesPage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
