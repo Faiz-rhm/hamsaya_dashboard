@@ -3,6 +3,7 @@ import { toast } from 'sonner'
 import apiClient from '../../lib/api-client'
 import type { ApiResponse, AdminStatistics } from '../../types/index'
 import { Users, FileText, Building2, AlertTriangle, UserCheck, UserX } from 'lucide-react'
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 export default function DashboardOverview() {
   const [stats, setStats] = useState<AdminStatistics | null>(null)
@@ -152,6 +153,98 @@ export default function DashboardOverview() {
             icon={<AlertTriangle className="h-6 w-6" />}
             bgColor="bg-pink-400"
           />
+        </div>
+      </div>
+
+      {/* Analytics Charts */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Analytics Overview</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Posts by Type Chart */}
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Posts by Type</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={[
+                    { name: 'Feed', value: stats.posts_by_type.feed, color: '#A855F7' },
+                    { name: 'Event', value: stats.posts_by_type.event, color: '#F97316' },
+                    { name: 'Sell', value: stats.posts_by_type.sell, color: '#EAB308' },
+                    { name: 'Pull', value: stats.posts_by_type.pull, color: '#14B8A6' },
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {[
+                    { name: 'Feed', value: stats.posts_by_type.feed, color: '#A855F7' },
+                    { name: 'Event', value: stats.posts_by_type.event, color: '#F97316' },
+                    { name: 'Sell', value: stats.posts_by_type.sell, color: '#EAB308' },
+                    { name: 'Pull', value: stats.posts_by_type.pull, color: '#14B8A6' },
+                  ].map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* User Status Chart */}
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">User Status Distribution</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={[
+                    { name: 'Active', value: stats.active_users, color: '#22C55E' },
+                    { name: 'Inactive', value: stats.inactive_users, color: '#6B7280' },
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {[
+                    { name: 'Active', value: stats.active_users, color: '#22C55E' },
+                    { name: 'Inactive', value: stats.inactive_users, color: '#6B7280' },
+                  ].map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Pending Reports Chart */}
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 lg:col-span-2">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Pending Reports by Type</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart
+                data={[
+                  { name: 'Posts', value: stats.pending_reports.posts },
+                  { name: 'Comments', value: stats.pending_reports.comments },
+                  { name: 'Users', value: stats.pending_reports.users },
+                  { name: 'Businesses', value: stats.pending_reports.businesses },
+                ]}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" name="Pending Reports" fill="#EF4444" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
     </div>

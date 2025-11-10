@@ -227,6 +227,50 @@ export interface UpdateReportStatusRequest {
   status: ReportStatus
 }
 
+export interface PostReportDetail {
+  id: string
+  user_id: string
+  post_id: string
+  reason: string
+  additional_comments: string | null
+  status: ReportStatus
+  created_at: string
+  updated_at: string
+}
+
+export interface CommentReportDetail {
+  id: string
+  user_id: string
+  comment_id: string
+  reason: string
+  additional_comments: string | null
+  status: ReportStatus
+  created_at: string
+  updated_at: string
+}
+
+export interface UserReportDetail {
+  id: string
+  reported_user: string
+  reported_by_id: string
+  reason: string
+  description: string | null
+  status: ReportStatus
+  created_at: string
+  updated_at: string
+}
+
+export interface BusinessReportDetail {
+  id: string
+  business_id: string
+  user_id: string
+  reason: string
+  additional_comments: string | null
+  status: ReportStatus
+  created_at: string
+  updated_at: string
+}
+
 // Business Management Types
 export interface AdminBusinessListItem {
   id: string
@@ -261,6 +305,15 @@ export interface UpdateBusinessStatusRequest {
   status: boolean
 }
 
+export interface AdminUpdateBusinessRequest {
+  name?: string
+  license_no?: string
+  email?: string
+  phone_number?: string
+  province?: string
+  district?: string
+}
+
 export interface UpdatePostStatusRequest {
   status: boolean
 }
@@ -290,4 +343,14 @@ export interface Poll {
   total_votes: number
   created_at: string
   updated_at: string
+}
+
+// Sell Statistics Types
+export interface SellStatistics {
+  total_sell_posts: number
+  total_sold: number
+  total_active: number
+  total_expired: number
+  total_revenue: number
+  average_price: number
 }

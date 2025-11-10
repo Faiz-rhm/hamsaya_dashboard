@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import apiClient from '../../lib/api-client'
 import type { ApiResponse, AdminReportListItem, ReportListResponse, ReportType, ReportStatus, UpdateReportStatusRequest } from '../../types/index'
-import { Search, FileText, MessageSquare, User, Building2, AlertCircle, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { Search, FileText, MessageSquare, User, Building2, AlertCircle, Clock, CheckCircle, XCircle, Eye } from 'lucide-react'
 import { cx, formatDate } from '../../lib/utils'
+import ReportDetailsModal from '../../components/admin/ReportDetailsModal'
 
 type TypeTabType = 'all' | 'POST' | 'COMMENT' | 'USER' | 'BUSINESS'
 type StatusTabType = 'all' | 'PENDING' | 'REVIEWING' | 'RESOLVED' | 'REJECTED'
@@ -18,6 +19,8 @@ export default function ReportsPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const [updatingReportId, setUpdatingReportId] = useState<string | null>(null)
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+  const [selectedReport, setSelectedReport] = useState<{ id: string; type: ReportType } | null>(null)
   const limit = 20
 
   useEffect(() => {
@@ -100,6 +103,11 @@ export default function ReportsPage() {
     } finally {
       setUpdatingReportId(null)
     }
+  }
+
+  const handleViewDetails = (reportId: string, reportType: ReportType) => {
+    setSelectedReport({ id: reportId, type: reportType })
+    setIsDetailsModalOpen(true)
   }
 
   const getReportTypeIcon = (type: ReportType) => {
@@ -440,17 +448,26 @@ export default function ReportsPage() {
                       {formatDate(report.created_at)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <select
-                        value={report.status}
-                        onChange={(e) => handleStatusUpdate(report.id, report.report_type, e.target.value as ReportStatus)}
-                        disabled={updatingReportId === report.id}
-                        className="text-sm border border-gray-300 rounded-lg px-3 py-2 shadow-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-white font-medium text-gray-700"
-                      >
-                        <option value="PENDING">Pending</option>
-                        <option value="REVIEWING">Reviewing</option>
-                        <option value="RESOLVED">Resolved</option>
-                        <option value="REJECTED">Rejected</option>
-                      </select>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleViewDetails(report.id, report.report_type)}
+                          className="px-3 py-1.5 rounded-md text-xs font-semibold transition-all shadow-xs bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200 flex items-center gap-1"
+                        >
+                          <Eye className="h-3 w-3" />
+                          View
+                        </button>
+                        <select
+                          value={report.status}
+                          onChange={(e) => handleStatusUpdate(report.id, report.report_type, e.target.value as ReportStatus)}
+                          disabled={updatingReportId === report.id}
+                          className="text-sm border border-gray-300 rounded-lg px-3 py-2 shadow-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-white font-medium text-gray-700"
+                        >
+                          <option value="PENDING">Pending</option>
+                          <option value="REVIEWING">Reviewing</option>
+                          <option value="RESOLVED">Resolved</option>
+                          <option value="REJECTED">Rejected</option>
+                        </select>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -493,6 +510,16 @@ export default function ReportsPage() {
             </div>
           )}
         </div>
+      )}
+
+      {/* Report Details Modal */}
+      {selectedReport && (
+        <ReportDetailsModal
+          reportId={selectedReport.id}
+          reportType={selectedReport.type}
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+        />
       )}
     </div>
   )
