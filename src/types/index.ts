@@ -91,9 +91,16 @@ export interface LoginResponse {
 
 // Admin Statistics Types
 export interface AdminStatistics {
-  total_users: number
-  active_users: number
-  inactive_users: number
+  // Account Status
+  total_active_accounts: number // Accounts with is_active = true
+  deactivated_accounts: number  // Accounts with is_active = false
+  new_users_this_month: number
+
+  // Login Activity (for active accounts only)
+  recently_active_users: number // Logged in last 30 days AND is_active = true
+  dormant_users: number         // No login in 30+ days AND is_active = true
+
+  // Content Statistics
   total_posts: number
   posts_by_type: PostTypeStats
   total_businesses: number

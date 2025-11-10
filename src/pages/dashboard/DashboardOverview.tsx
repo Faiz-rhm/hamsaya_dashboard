@@ -50,26 +50,49 @@ export default function DashboardOverview() {
         <p className="text-gray-600 mt-2">Welcome to Hamsaya Admin Dashboard</p>
       </div>
 
-      {/* User Statistics */}
+      {/* Account Status Statistics */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">User Statistics</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Account Status</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <StatCard
-            title="Total Users"
-            value={stats.total_users}
+            title="Active Accounts"
+            value={stats.total_active_accounts}
+            subtitle="Enabled accounts"
             icon={<Users className="h-8 w-8" />}
             bgColor="bg-blue-500"
           />
           <StatCard
-            title="Active Users"
-            value={stats.active_users}
-            subtitle="Last 30 days"
+            title="Deactivated Accounts"
+            value={stats.deactivated_accounts}
+            subtitle="Disabled by admin"
+            icon={<UserX className="h-8 w-8" />}
+            bgColor="bg-red-500"
+          />
+          <StatCard
+            title="New Users This Month"
+            value={stats.new_users_this_month}
+            subtitle="Registered this month"
             icon={<UserCheck className="h-8 w-8" />}
             bgColor="bg-green-500"
           />
+        </div>
+      </div>
+
+      {/* User Engagement Statistics */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">User Engagement (Last 30 Days)</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <StatCard
-            title="Inactive Users"
-            value={stats.inactive_users}
+            title="Recently Active"
+            value={stats.recently_active_users}
+            subtitle="Logged in last 30 days"
+            icon={<UserCheck className="h-8 w-8" />}
+            bgColor="bg-green-600"
+          />
+          <StatCard
+            title="Dormant Users"
+            value={stats.dormant_users}
+            subtitle="No login in 30+ days"
             icon={<UserX className="h-8 w-8" />}
             bgColor="bg-gray-500"
           />
@@ -194,15 +217,16 @@ export default function DashboardOverview() {
             </ResponsiveContainer>
           </div>
 
-          {/* User Status Chart */}
+          {/* User Engagement Chart */}
           <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">User Status Distribution</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">User Engagement Distribution</h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
                   data={[
-                    { name: 'Active', value: stats.active_users, color: '#22C55E' },
-                    { name: 'Inactive', value: stats.inactive_users, color: '#6B7280' },
+                    { name: 'Recently Active', value: stats.recently_active_users, color: '#22C55E' },
+                    { name: 'Dormant', value: stats.dormant_users, color: '#6B7280' },
+                    { name: 'Deactivated', value: stats.deactivated_accounts, color: '#EF4444' },
                   ]}
                   cx="50%"
                   cy="50%"
@@ -213,8 +237,9 @@ export default function DashboardOverview() {
                   dataKey="value"
                 >
                   {[
-                    { name: 'Active', value: stats.active_users, color: '#22C55E' },
-                    { name: 'Inactive', value: stats.inactive_users, color: '#6B7280' },
+                    { name: 'Recently Active', value: stats.recently_active_users, color: '#22C55E' },
+                    { name: 'Dormant', value: stats.dormant_users, color: '#6B7280' },
+                    { name: 'Deactivated', value: stats.deactivated_accounts, color: '#EF4444' },
                   ].map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
