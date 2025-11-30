@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # Dashboard Frontend
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080/api/v1}
+        VITE_APP_ENV: ${VITE_APP_ENV:-development}
+    container_name: hamsaya-dashboard
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - hamsaya-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Backend API (optional - if running together)
+  # Uncomment to run backend with dashboard
+  # backend:
+  #   image: hamsaya-backend:latest
+  #   container_name: hamsaya-backend
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - SERVER_PORT=8080
+  #     - DATABASE_HOST=postgres
+  #     - REDIS_HOST=redis
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   restart: unless-stopped
+  #   networks:
+  #     - hamsaya-network
+
+  # PostgreSQL Database (optional)
+  # postgres:
+  #   image: postgis/postgis:15-3.3
+  #   container_name: hamsaya-postgres
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     POSTGRES_USER: hamsaya
+  #     POSTGRES_PASSWORD: hamsaya_password
+  #     POSTGRES_DB: hamsaya
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - hamsaya-network
+
+  # Redis (optional)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: hamsaya-redis
+  #   ports:
+  #     - "6379:6379"
+  #   restart: unless-stopped
+  #   networks:
+  #     - hamsaya-network
+
+networks:
+  hamsaya-network:
+    driver: bridge
+
+# volumes:
+#   postgres_data:
