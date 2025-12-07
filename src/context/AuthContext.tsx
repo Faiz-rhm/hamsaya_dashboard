@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (credentials: LoginCredentials) => {
     try {
-      const response = await apiClient.post<ApiResponse<LoginResponse>>('/auth/login', credentials)
+      const response = await apiClient.post<ApiResponse<LoginResponse>>('/admin/auth/login', credentials)
 
       if (response.data.success && response.data.data) {
         const { tokens } = response.data.data
